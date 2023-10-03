@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import Api from "../../utils/Api";
+import Api from "../../utils/api"
 
 function Main({onEditAvatar, onEditProfile, onAddPlace}) {
   const [userName, setUserName] = useState();
