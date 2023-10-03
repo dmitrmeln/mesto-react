@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {api} from "../../utils/Api";
+import {Api} from "../../utils/Api";
 
 function Main({onEditAvatar, onEditProfile, onAddPlace}) {
   const [userName, setUserName] = useState();
@@ -7,7 +7,7 @@ function Main({onEditAvatar, onEditProfile, onAddPlace}) {
   const [userAvatar, setUserAvatar] = useState();
   
   useEffect(() => {
-    api
+    Api
       .getUserInfo()
       .then((result) => {
         setUserName(result.name);

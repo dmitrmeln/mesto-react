@@ -4,7 +4,7 @@ import Footer from "./Footer/Footer";
 import PopupWithForm from "./PopupWithForm/PopupWithForm";
 import ImagePopup from "./ImagePopup/ImagePopup";
 import Card from "./Card/Card";
-import {api} from "../utils/Api";
+import {Api} from "../utils/Api";
 import {useEffect, useState} from "react";
 
 function App() {
@@ -65,7 +65,7 @@ function App() {
   }
 
   useEffect(() => {
-    api
+    Api
       .getInitialCards()
       .then((result) => {
         setCards(mapCards(result));
