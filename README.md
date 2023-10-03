@@ -21,4 +21,4 @@
 - Добавить тени для текста с помощью **text-shadow** в CSS.
 - Реализовать бекэнд.
 -------------
-Ссылка на проект: https://dmitrmeln.github.io/mesto/
+Ссылка на проект: https://dmitrmeln.github.io/mesto-react/
