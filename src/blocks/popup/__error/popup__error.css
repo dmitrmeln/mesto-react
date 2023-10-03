@@ -1,0 +1,4 @@
+.popup__error {
+  display: flex;
+  min-height: 30px;
+}
