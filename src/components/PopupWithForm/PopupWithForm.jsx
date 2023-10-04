@@ -1,20 +1,15 @@
-export default function PopupWithForm({
-  title,
-  name,
-  children,
-  isOpen,
-  onClose,
-}) {
+export default function PopupWithForm(props) {
   return (
     <div>
       <div
-        onClick={onClose}
-        className={`popup popup_type_${name} ${isOpen ? "popup_opened" : ""}`}>
+        onClick={props.onClose}
+        className={`popup ${props.isOpen ? "popup_opened" : ""}`}>
         <div className="popup__container">
           <button type="button" className="popup__close-button"></button>
-          <form className="popup__form" name={`${name}-form`} noValidate>
-            <h2 className="popup__heading">{title}</h2>
-            {children}
+          <form className="popup__form" name={`${props.name}-form`} noValidate>
+            <h2 className="popup__heading">{props.title}</h2>
+            {props.children}
+            <button type="submit" className="popup__button">{props.buttonText}</button>
           </form>
         </div>
       </div>
