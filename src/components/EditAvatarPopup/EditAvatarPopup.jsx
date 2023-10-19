@@ -14,7 +14,7 @@ export default function EditAvatarPopup(props) {
   return (
     <div>
       <div
-        onClick={props.onClose}
+        onMouseDown={props.onClose}
         className={`popup ${props.isOpen ? "popup_opened" : ""}`}>
         <div className="popup__container">
           <button type="button" className="popup__close-button"></button>
