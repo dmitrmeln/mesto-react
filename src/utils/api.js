@@ -21,7 +21,7 @@ class ApiClass {
     });
   }
 
-  changeUserInfo(info) {
+  setUserInfo(info) {
     return this._handleRequest(`${this._baseUrl}/users/me`, {
       method: "PATCH",
       headers: this._headers,
@@ -29,7 +29,7 @@ class ApiClass {
     });
   }
 
-  getInitialCards() {
+  getCardList() {
     return this._handleRequest(`${this._baseUrl}/cards`, {
       method: "GET",
       headers: this._headers,
@@ -51,21 +51,21 @@ class ApiClass {
     });
   }
 
-  likeCard(id) {
-    return this._handleRequest(`${this._baseUrl}/cards/${id}/likes`, {
-      method: "PUT",
-      headers: this._headers,
-    });
+  changeLikeCardStatus(id, isLiked) {
+    if (isLiked) {
+      return this._handleRequest(`${this._baseUrl}/cards/${id}/likes`, {
+        method: "PUT",
+        headers: this._headers,
+      });
+    } else {
+      return this._handleRequest(`${this._baseUrl}/cards/${id}/likes`, {
+        method: "DELETE",
+        headers: this._headers,
+      });
+    }
   }
 
-  unlikeCard(id) {
-    return this._handleRequest(`${this._baseUrl}/cards/${id}/likes`, {
-      method: "DELETE",
-      headers: this._headers,
-    });
-  }
-
-  changeAvatar(avatar) {
+  setUserAvatar(avatar) {
     return this._handleRequest(`${this._baseUrl}/users/me/avatar`, {
       method: "PATCH",
       headers: this._headers,
