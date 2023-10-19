@@ -1,23 +1,27 @@
 import Header from "./Header/Header";
 import Main from "./Main/Main";
 import Footer from "./Footer/Footer";
-import PopupWithForm from "./PopupWithForm/PopupWithForm";
 import ImagePopup from "./ImagePopup/ImagePopup";
 import Api from "../utils/api";
 import EditProfilePopup from "./EditProfilePopup/EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup/EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup/AddPlacePopup";
+import ConfirmationPopup from "./ConfirmationPopup/ConfirmationPopup";
 import {useEffect, useState} from "react";
 import {CurrentUserContext} from "../contexts/CurrentUserContext";
+import FormValidator from "./FormValidator/FormValidator";
+import { validationConfig } from "../utils/constants";
 
 function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupState] = useState(false);
   const [isAddPlacePopupOpen, setAddPlacePopupState] = useState(false);
   const [isEditAvatarPopupOpen, setEditAvatarPopupState] = useState(false);
+  const [isConfirmationPopupOpen, setConfirmationPopupState] = useState(false);
   const [isImagePopupOpen, setImagePopupState] = useState(false);
   const [selectedCard, setSelectedCard] = useState({});
   const [currentUser, setCurrentUser] = useState([]);
   const [cards, setCards] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     Api.getUserInfo()
@@ -58,6 +62,7 @@ function App() {
     setAddPlacePopupState(false);
     setEditProfilePopupState(false);
     setImagePopupState(false);
+    setConfirmationPopupState(false);
   }
 
   function closeAllPopups(evt) {
@@ -93,17 +98,8 @@ function App() {
       });
   }
 
-  function handleCardDelete(card) {
-    Api.deleteCard(card._id)
-      .then(() => {
-        setCards((state) => state.filter((c) => c._id !== card._id));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
   function handleUpdateUser(data) {
+    setIsLoading(true)
     Api.setUserInfo(data)
       .then((result) => {
         setCurrentUser(result);
@@ -111,10 +107,14 @@ function App() {
       })
       .catch((error) => {
         console.log(error);
+      })
+      .finally(() => {
+        setIsLoading(false)
       });
   }
 
   function handleUpdateAvatar(data) {
+    setIsLoading(true)
     Api.setUserAvatar(data)
       .then((result) => {
         setCurrentUser(result);
@@ -122,10 +122,14 @@ function App() {
       })
       .catch((error) => {
         console.log(error);
+      })
+      .finally(() => {
+        setIsLoading(false)
       });
   }
 
   function handleAddPlaceSubmit(data) {
+    setIsLoading(true)
     Api.createNewCard(data)
       .then((newCard) => {
         setCards([newCard, ...cards]);
@@ -133,8 +137,50 @@ function App() {
       })
       .catch((error) => {
         console.log(error);
+      })
+      .finally(() => {
+        setIsLoading(false)
       });
   }
+
+  function handleCardDelete(card) {
+    setConfirmationPopupState(true);
+    setSelectedCard({
+      id: card._id,
+      src: card.link,
+      title: card.name,
+    });
+  }
+
+  function handleConfirmationSubmit(selectedCard) {
+    setIsLoading(true)
+    Api.deleteCard(selectedCard.id)
+      .then(() => {
+        setCards((state) => state.filter((c) => c._id !== selectedCard.id));
+        setConfirmationPopupState(false);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setIsLoading(false)
+      });
+  }
+
+  const formValidators = {};
+
+  const enableValidation = (config) => {
+    const formList = Array.from(document.querySelectorAll(config.formSelector));
+    formList.forEach((formElement) => {
+      const validator = new FormValidator(config, formElement);
+      const formName = formElement.getAttribute("name");
+
+      formValidators[formName] = validator;
+      validator.enableValidation();
+    });
+  };
+
+  enableValidation(validationConfig);
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -142,12 +188,17 @@ function App() {
         <Header />
         <Main
           onEditAvatar={function handleEditAvatarClick() {
+            formValidators["avatar-form"].clearForm();
+            formValidators["avatar-form"].resetValidation();
             setEditAvatarPopupState(true);
           }}
           onEditProfile={function handleEditProfileClick() {
+            formValidators["edit-form"].resetValidation();
             setEditProfilePopupState(true);
           }}
           onAddPlace={function handleAddPlaceClick() {
+            formValidators["add-form"].clearForm();
+            formValidators["add-form"].resetValidation();
             setAddPlacePopupState(true);
           }}
           onCardClick={handleCardClick}
@@ -162,25 +213,29 @@ function App() {
         isOpen={isEditProfilePopupOpen}
         onClose={closeAllPopups}
         onUpdateUser={handleUpdateUser}
+        isLoading={isLoading}
       />
 
       <AddPlacePopup
         isOpen={isAddPlacePopupOpen}
         onClose={closeAllPopups}
         onAddPlace={handleAddPlaceSubmit}
+        isLoading={isLoading}
       />
 
-      <PopupWithForm
-        title="Вы уверены?"
-        name="confirmation"
-        buttonText="Да"
+      <ConfirmationPopup
+        isOpen={isConfirmationPopupOpen}
+        card={selectedCard}
         onClose={closeAllPopups}
+        onConfirmation={handleConfirmationSubmit}
+        isLoading={isLoading}
       />
 
       <EditAvatarPopup
         isOpen={isEditAvatarPopupOpen}
         onClose={closeAllPopups}
         onUpdateAvatar={handleUpdateAvatar}
+        isLoading={isLoading}
       />
 
       <ImagePopup

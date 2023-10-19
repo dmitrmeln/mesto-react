@@ -67,7 +67,7 @@ export default function EditProfilePopup(props) {
             />
             <span className="popup__error popup__about-error"></span>
             <button type="submit" className="popup__button">
-              Сохранить
+              {props.isLoading ? "Сохранение..." : "Сохранить"}
             </button>
           </form>
         </div>

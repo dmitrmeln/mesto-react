@@ -57,7 +57,7 @@ export default function AddPlacePopup(props) {
             />
             <span className="popup__error popup__card-link-error"></span>
             <button type="submit" className="popup__button">
-              Создать
+              {props.isLoading ? "Создание..." : "Создать"}
             </button>
           </form>
         </div>

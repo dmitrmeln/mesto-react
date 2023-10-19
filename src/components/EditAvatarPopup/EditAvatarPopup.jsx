@@ -35,7 +35,7 @@ export default function EditAvatarPopup(props) {
             />
             <span className="popup__error popup__avatar-link-error"></span>
             <button type="submit" className="popup__button">
-              Сохранить
+              {props.isLoading ? "Сохранение..." : "Сохранить"}
             </button>
           </form>
         </div>
