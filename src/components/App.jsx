@@ -2,15 +2,15 @@ import Header from "./Header/Header";
 import Main from "./Main/Main";
 import Footer from "./Footer/Footer";
 import ImagePopup from "./ImagePopup/ImagePopup";
-import Api from "../utils/api";
+import api from "../utils/api";
 import EditProfilePopup from "./EditProfilePopup/EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup/EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup/AddPlacePopup";
 import ConfirmationPopup from "./ConfirmationPopup/ConfirmationPopup";
 import {useEffect, useState} from "react";
 import {CurrentUserContext} from "../contexts/CurrentUserContext";
-import FormValidator from "./FormValidator/FormValidator";
-import { validationConfig } from "../utils/constants";
+import FormValidator from "../utils/FormValidator";
+import {validationConfig} from "../utils/constants";
 
 function App() {
   const [isEditProfilePopupOpen, setEditProfilePopupState] = useState(false);
@@ -19,12 +19,13 @@ function App() {
   const [isConfirmationPopupOpen, setConfirmationPopupState] = useState(false);
   const [isImagePopupOpen, setImagePopupState] = useState(false);
   const [selectedCard, setSelectedCard] = useState({});
-  const [currentUser, setCurrentUser] = useState([]);
+  const [currentUser, setCurrentUser] = useState({name: "", about: ""});
   const [cards, setCards] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    Api.getUserInfo()
+    api
+      .getUserInfo()
       .then((result) => {
         setCurrentUser(result);
       })
@@ -34,7 +35,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    Api.getCardList()
+    api
+      .getCardList()
       .then((result) => {
         setCards(result);
       })
@@ -50,12 +52,30 @@ function App() {
       }
     }
 
-    document.addEventListener("keydown", handleEscClose);
+    if (
+      [
+        isEditProfilePopupOpen,
+        isAddPlacePopupOpen,
+        isEditAvatarPopupOpen,
+        isConfirmationPopupOpen,
+        isImagePopupOpen,
+      ].some((state) => {
+        return state === true;
+      })
+    ) {
+      document.addEventListener("keydown", handleEscClose);
+    }
 
     return () => {
       document.removeEventListener("keydown", handleEscClose);
     };
-  });
+  }, [
+    isEditProfilePopupOpen,
+    isAddPlacePopupOpen,
+    isEditAvatarPopupOpen,
+    isConfirmationPopupOpen,
+    isImagePopupOpen,
+  ]);
 
   function changeAllPopupsState() {
     setEditAvatarPopupState(false);
@@ -75,6 +95,22 @@ function App() {
     }
   }
 
+  function handleEditAvatarClick() {
+    formValidators["avatar-form"].resetValidation();
+    formValidators["avatar-form"].clearForm();
+    setEditAvatarPopupState(true);
+  }
+
+  function handleEditProfileClick() {
+    formValidators["edit-form"].resetValidation();
+    setEditProfilePopupState(true);
+  }
+
+  function handleAddPlaceClick() {
+    formValidators["add-form"].resetValidation();
+    setAddPlacePopupState(true);
+  }
+
   function handleCardClick(card) {
     setSelectedCard({
       id: card._id,
@@ -87,7 +123,8 @@ function App() {
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
 
-    Api.changeLikeCardStatus(card._id, !isLiked)
+    api
+      .changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
         setCards((state) =>
           state.map((c) => (c._id === card._id ? newCard : c))
@@ -99,8 +136,9 @@ function App() {
   }
 
   function handleUpdateUser(data) {
-    setIsLoading(true)
-    Api.setUserInfo(data)
+    setIsLoading(true);
+    api
+      .setUserInfo(data)
       .then((result) => {
         setCurrentUser(result);
         changeAllPopupsState();
@@ -109,13 +147,14 @@ function App() {
         console.log(error);
       })
       .finally(() => {
-        setIsLoading(false)
+        setIsLoading(false);
       });
   }
 
   function handleUpdateAvatar(data) {
-    setIsLoading(true)
-    Api.setUserAvatar(data)
+    setIsLoading(true);
+    api
+      .setUserAvatar(data)
       .then((result) => {
         setCurrentUser(result);
         changeAllPopupsState();
@@ -124,13 +163,14 @@ function App() {
         console.log(error);
       })
       .finally(() => {
-        setIsLoading(false)
+        setIsLoading(false);
       });
   }
 
   function handleAddPlaceSubmit(data) {
-    setIsLoading(true)
-    Api.createNewCard(data)
+    setIsLoading(true);
+    api
+      .createNewCard(data)
       .then((newCard) => {
         setCards([newCard, ...cards]);
         changeAllPopupsState();
@@ -139,7 +179,7 @@ function App() {
         console.log(error);
       })
       .finally(() => {
-        setIsLoading(false)
+        setIsLoading(false);
       });
   }
 
@@ -153,8 +193,9 @@ function App() {
   }
 
   function handleConfirmationSubmit(selectedCard) {
-    setIsLoading(true)
-    Api.deleteCard(selectedCard.id)
+    setIsLoading(true);
+    api
+      .deleteCard(selectedCard.id)
       .then(() => {
         setCards((state) => state.filter((c) => c._id !== selectedCard.id));
         setConfirmationPopupState(false);
@@ -163,7 +204,7 @@ function App() {
         console.log(error);
       })
       .finally(() => {
-        setIsLoading(false)
+        setIsLoading(false);
       });
   }
 
@@ -187,20 +228,9 @@ function App() {
       <div className="page">
         <Header />
         <Main
-          onEditAvatar={function handleEditAvatarClick() {
-            formValidators["avatar-form"].clearForm();
-            formValidators["avatar-form"].resetValidation();
-            setEditAvatarPopupState(true);
-          }}
-          onEditProfile={function handleEditProfileClick() {
-            formValidators["edit-form"].resetValidation();
-            setEditProfilePopupState(true);
-          }}
-          onAddPlace={function handleAddPlaceClick() {
-            formValidators["add-form"].clearForm();
-            formValidators["add-form"].resetValidation();
-            setAddPlacePopupState(true);
-          }}
+          onEditAvatar={handleEditAvatarClick}
+          onEditProfile={handleEditProfileClick}
+          onAddPlace={handleAddPlaceClick}
           onCardClick={handleCardClick}
           onCardLike={handleCardLike}
           onCardDelete={handleCardDelete}

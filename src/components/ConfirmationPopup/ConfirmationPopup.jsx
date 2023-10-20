@@ -19,7 +19,7 @@ export default function ConfirmationPopup(props) {
             noValidate>
             <h2 className="popup__heading">Вы уверены?</h2>
             <button type="submit" className="popup__button">
-            {props.isLoading ? "Удаление..." : "Да"}
+              {props.isLoading ? "Удаление..." : "Да"}
             </button>
           </form>
         </div>

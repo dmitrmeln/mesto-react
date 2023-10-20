@@ -19,6 +19,9 @@ export default function AddPlacePopup(props) {
       name,
       link: place,
     });
+
+    setName("");
+    setPlace("");
   }
 
   return (
@@ -40,6 +43,7 @@ export default function AddPlacePopup(props) {
               className="popup__input"
               id="popup__card-name"
               name="name"
+              value={name}
               placeholder="Название"
               minLength="2"
               maxLength="30"
@@ -52,6 +56,7 @@ export default function AddPlacePopup(props) {
               className="popup__input"
               id="popup__card-link"
               name="link"
+              value={place}
               placeholder="Ссылка на картинку"
               required
             />

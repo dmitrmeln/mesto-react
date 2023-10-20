@@ -44,7 +44,7 @@ export default function EditProfilePopup(props) {
             <h2 className="popup__heading">Редактировать профиль</h2>
             <input
               type="text"
-              defaultValue={name}
+              value={name}
               onChange={handleNameChange}
               className="popup__input"
               id="popup__name"
@@ -56,7 +56,7 @@ export default function EditProfilePopup(props) {
             <span className="popup__error popup__name-error"></span>
             <input
               type="text"
-              defaultValue={description}
+              value={description}
               onChange={handleDescriptionChange}
               className="popup__input"
               id="popup__about"
