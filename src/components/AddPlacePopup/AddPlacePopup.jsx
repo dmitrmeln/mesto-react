@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 
 export default function AddPlacePopup(props) {
   const [name, setName] = useState("");
@@ -19,10 +19,14 @@ export default function AddPlacePopup(props) {
       name,
       link: place,
     });
-
-    setName("");
-    setPlace("");
   }
+
+  useEffect(() => {
+    if (!props.isOpen) {
+      setName("");
+      setPlace("");
+    }
+  }, [props.isOpen]);
 
   return (
     <div>
